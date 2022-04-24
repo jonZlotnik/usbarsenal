@@ -1,0 +1,6 @@
+github.com/usbarmory/crucible v0.0.0-20220412125126-837bdb65a20d h1:oseSijm6DZQ+6HB60MrUI+8+ih41xBY2mTsROMxNev0=
+github.com/usbarmory/crucible v0.0.0-20220412125126-837bdb65a20d/go.mod h1:ABOnojjZ3kh3ob5LH11XeNvaNdLxOW0rdoDn1l2PURc=
+github.com/usbarmory/tamago v0.0.0-20220415071706-04f117ebf144 h1:fvVEd5mT0D/kOXkdC6nzz0uyQh4/UdvYlpmNs1Ne2Kc=
+github.com/usbarmory/tamago v0.0.0-20220415071706-04f117ebf144/go.mod h1:Lok79mjbJnhoBGqhX5cCUsZtSemsQF5FNZW+2R1dRr8=
+go.mozilla.org/pkcs7 v0.0.0-20210826202110-33d05740a352 h1:CCriYyAfq1Br1aIYettdHZTy8mBTIPo7We18TuO/bak=
+go.mozilla.org/pkcs7 v0.0.0-20210826202110-33d05740a352/go.mod h1:SNgMg+EgDFwmvSmLRTNKC5fegJjB7v23qTQ0XLGUNHk=
