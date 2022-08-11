@@ -9,9 +9,12 @@ RUN ls -l /usr/local/tamago-go
 FROM mcr.microsoft.com/vscode/devcontainers/base:ubuntu
 
 RUN apt-get update
+RUN apt-get install -y git
 RUN apt-get install -y build-essential
 RUN apt-get install -y gcc-arm-none-eabi
 RUN apt-get install -y u-boot-tools
+
+RUN git config --global --add safe.directory /workspaces/usbarsenal
 
 ENV GOROOT=/usr/local/go
 COPY --from=tamago_go /usr/local/tamago-go $GOROOT
@@ -31,3 +34,5 @@ RUN go install -v github.com/usbarmory/crucible/cmd/habtool@latest
 
 ENV GOOS=tamago
 ENV GOARCH=arm
+
+

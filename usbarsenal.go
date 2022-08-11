@@ -3,27 +3,26 @@ package main
 import (
 	"time"
 
-	usbarmory "github.com/usbarmory/tamago/board/f-secure/usbarmory/mark-two"
+	_ "github.com/usbarmory/crucible/fusemap"
+	usbarmory "github.com/usbarmory/tamago/board/usbarmory/mk2"
 	imxusb "github.com/usbarmory/tamago/soc/imx6/usb"
 )
 
 func main() {
-	go func() {
-		for {
-			usbarmory.LED("white", true)
-			time.Sleep(time.Second)
-			usbarmory.LED("white", false)
-			time.Sleep(time.Second)
-		}
-	}()
-	port := imxusb.USB1
+	port := usbarmory.USB1
 	device := &imxusb.Device{}
 	configureKeyboardDevice(device)
 	port.Init()
 	port.DeviceMode()
 	port.Reset()
 
-	port.Start(device)
+	go port.Start(device)
+	for {
+		usbarmory.LED("white", true)
+		time.Sleep(time.Second)
+		usbarmory.LED("white", false)
+		time.Sleep(time.Second)
+	}
 }
 
 func configureKeyboardDevice(device *imxusb.Device) {
@@ -53,10 +52,10 @@ func configureKeyboardDevice(device *imxusb.Device) {
 	conf.SetDefaults()
 	conf.DescriptorType = 0x02
 	conf.TotalLength = 0x003B
-	conf.NumInterfaces = 0x02
-	conf.ConfigurationValue = 0x01
+	conf.NumInterfaces = 0x00      // changed 0 to 1 -> caused "numInterfaces to become 2" and malformed packet
+	conf.ConfigurationValue = 0x00 // changed 1 to 0 -> got rid of USB version FIXME in wireshark
 	conf.Configuration = 0x00
-	conf.Attributes = 0b10100000
+	// conf.Attributes = 0b10100000
 
 	// -- interface descriptor (keyboard)
 	keyboardInterface := &imxusb.InterfaceDescriptor{}
@@ -64,7 +63,7 @@ func configureKeyboardDevice(device *imxusb.Device) {
 	keyboardInterface.DescriptorType = 0x04
 	keyboardInterface.InterfaceNumber = 0x00
 	keyboardInterface.AlternateSetting = 0x00
-	keyboardInterface.NumEndpoints = 0x01
+	keyboardInterface.NumEndpoints = 0x02
 	keyboardInterface.InterfaceClass = 0x03
 	keyboardInterface.InterfaceSubClass = 0x01
 	keyboardInterface.InterfaceProtocol = 0x01
@@ -87,6 +86,7 @@ func configureKeyboardDevice(device *imxusb.Device) {
 		Attributes:      0b00000011,
 		MaxPacketSize:   0x0008,
 		Interval:        0x0A,
+		Function:        HIDTx,
 	}
 
 	// Put the descriptors together

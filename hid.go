@@ -20,3 +20,12 @@ func (d *HIDDescriptor) Bytes() []byte {
 	binary.Write(buf, binary.LittleEndian, d)
 	return buf.Bytes()
 }
+
+func HIDTx(_ []byte, lastErr error) (in []byte, err error) {
+	resBytes := [8]byte{
+		0, 0, 1, 0, 0, 1, 0, 0,
+	}
+	in = resBytes[:]
+	err = nil
+	return
+}
