@@ -1,0 +1,3 @@
+[submodule "tamago"]
+	path = tamago
+	url = https://github.com/jonZlotnik/tamago
