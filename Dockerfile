@@ -13,6 +13,7 @@ RUN apt-get install -y git
 RUN apt-get install -y build-essential
 RUN apt-get install -y gcc-arm-none-eabi
 RUN apt-get install -y u-boot-tools
+RUN apt-get install -y qemu-system-arm
 
 RUN git config --global --add safe.directory /workspaces/usbarsenal
 

@@ -9,8 +9,9 @@ require (
 
 require (
 	github.com/ghodss/yaml v1.0.0 // indirect
+	go.mozilla.org/pkcs7 v0.0.0-20210826202110-33d05740a352 // indirect
 	golang.org/x/sync v0.0.0-20220601150217-0de741cfad7f // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
 
-replace github.com/usbarmory/tamago => github.com/jonZlotnik/tamago v0.0.0-20220803090757-c3c00f1b8561
+replace github.com/usbarmory/tamago v0.0.0-20220714104148-d5b7c14a0fbb => ./tamago

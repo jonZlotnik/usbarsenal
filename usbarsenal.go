@@ -3,13 +3,18 @@ package main
 import (
 	"time"
 
+	"encoding/hex"
+
 	_ "github.com/usbarmory/crucible/fusemap"
 	usbarmory "github.com/usbarmory/tamago/board/usbarmory/mk2"
-	imxusb "github.com/usbarmory/tamago/soc/imx6/usb"
+	imxusb "github.com/usbarmory/tamago/soc/nxp/usb"
 )
+
+const blinkInterval = 200 * time.Millisecond
 
 func main() {
 	port := usbarmory.USB1
+
 	device := &imxusb.Device{}
 	configureKeyboardDevice(device)
 	port.Init()
@@ -19,9 +24,9 @@ func main() {
 	go port.Start(device)
 	for {
 		usbarmory.LED("white", true)
-		time.Sleep(time.Second)
+		time.Sleep(blinkInterval)
 		usbarmory.LED("white", false)
-		time.Sleep(time.Second)
+		time.Sleep(blinkInterval)
 	}
 }
 
@@ -50,11 +55,11 @@ func configureKeyboardDevice(device *imxusb.Device) {
 	// configuration descriptor
 	conf := &imxusb.ConfigurationDescriptor{}
 	conf.SetDefaults()
-	conf.DescriptorType = 0x02
-	conf.TotalLength = 0x003B
-	conf.NumInterfaces = 0x00      // changed 0 to 1 -> caused "numInterfaces to become 2" and malformed packet
-	conf.ConfigurationValue = 0x00 // changed 1 to 0 -> got rid of USB version FIXME in wireshark
-	conf.Configuration = 0x00
+	// conf.DescriptorType = 0x02
+	// conf.TotalLength = 0x003B
+	// conf.NumInterfaces = 0x00      // changed 0 to 1 -> caused "numInterfaces to become 2" and malformed packet
+	// conf.ConfigurationValue = 0x00 // changed 1 to 0 -> got rid of USB version FIXME in wireshark
+	// conf.Configuration = 0x00
 	// conf.Attributes = 0b10100000
 
 	// -- interface descriptor (keyboard)
@@ -63,34 +68,37 @@ func configureKeyboardDevice(device *imxusb.Device) {
 	keyboardInterface.DescriptorType = 0x04
 	keyboardInterface.InterfaceNumber = 0x00
 	keyboardInterface.AlternateSetting = 0x00
-	keyboardInterface.NumEndpoints = 0x02
+	keyboardInterface.NumEndpoints = 0x01
 	keyboardInterface.InterfaceClass = 0x03
 	keyboardInterface.InterfaceSubClass = 0x01
 	keyboardInterface.InterfaceProtocol = 0x01
 	keyboardInterface.Interface = 0x00
 
 	// ----- class descriptor
-	keyboardClassDescriptor := HIDDescriptor{
-		Length:               0x09,
-		DescriptorType:       0x05,
-		HID:                  0x101,
-		CountryCode:          0x00,
-		NumDescriptors:       0x01,
-		ReportDescriptorType: 0x22,
-		DescriptorLength:     0x3f,
-	}
+	// keyboardClassDescriptor := HIDDescriptor{
+	// 	Length:               0x09,
+	// 	DescriptorType:       0x05,
+	// 	HID:                  0x101,
+	// 	CountryCode:          0x00,
+	// 	NumDescriptors:       0x01,
+	// 	ReportDescriptorType: 0x22,
+	// 	DescriptorLength:     0x3f,
+	// }
 	keyboardEndpointDescriptor := imxusb.EndpointDescriptor{
 		Length:          0x07,
 		DescriptorType:  0x05,
 		EndpointAddress: 0b10000001,
 		Attributes:      0b00000011,
 		MaxPacketSize:   0x0008,
-		Interval:        0x0A,
+		Interval:        0x01,
 		Function:        HIDTx,
 	}
 
 	// Put the descriptors together
-	keyboardInterface.ClassDescriptors = append(keyboardInterface.ClassDescriptors, keyboardClassDescriptor.Bytes())
+	// keyboardInterface.ClassDescriptors = append(keyboardInterface.ClassDescriptors, keyboardClassDescriptor.Bytes())
+	keyboardInterface.ClassDescriptors = make([][]byte, 1)
+	keyboardInterface.ClassDescriptors[0], _ = hex.DecodeString("092111010001224000")
+
 	keyboardInterface.Endpoints = append(keyboardInterface.Endpoints, &keyboardEndpointDescriptor)
 	conf.AddInterface(keyboardInterface)
 	device.AddConfiguration(conf)

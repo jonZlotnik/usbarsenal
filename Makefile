@@ -1,3 +1,4 @@
+
 # http://github.com/usbarmory/tamago-example
 #
 # Copyright (c) WithSecure Corporation
@@ -52,9 +53,9 @@ check_hab_keys:
 
 dcd:
 	@if test "${TARGET}" = "usbarmory"; then \
-		cp -f $(GOMODCACHE)/$(TAMAGO_PKG)/board/usbarmory/mk2/imximage.cfg $(APP).dcd; \
+		cp -f $(TAMAGO_PKG)/board/usbarmory/mk2/imximage.cfg $(APP).dcd; \
 	elif test "${TARGET}" = "mx6ullevk"; then \
-		cp -f $(GOMODCACHE)/$(TAMAGO_PKG)/board/nxp/mx6ullevk/imximage.cfg $(APP).dcd; \
+		cp -f $(TAMAGO_PKG)/board/nxp/mx6ullevk/imximage.cfg $(APP).dcd; \
 	else \
 		echo "invalid target - options are: usbarmory, mx6ullevk"; \
 		exit 1; \
@@ -79,7 +80,7 @@ $(APP): check_tamago IMX6ULL.yaml
 
 $(APP).dcd: check_tamago
 $(APP).dcd: GOMODCACHE=$(shell ${TAMAGO} env GOMODCACHE)
-$(APP).dcd: TAMAGO_PKG=$(shell grep "github.com/usbarmory/tamago v" go.mod | awk '{print $$1"@"$$2}')
+$(APP).dcd: TAMAGO_PKG=./tamago
 $(APP).dcd: dcd
 
 $(APP).bin: CROSS_COMPILE=arm-none-eabi-
@@ -116,3 +117,4 @@ $(APP)-signed.imx: check_hab_keys $(APP).imx
 		-i $(APP).imx \
 		-o $(APP).csf && \
 	cat $(APP).imx $(APP).csf > $(APP)-signed.imx
+
