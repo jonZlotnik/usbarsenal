@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"time"
 
 	"encoding/hex"
@@ -10,9 +11,34 @@ import (
 	imxusb "github.com/usbarmory/tamago/soc/nxp/usb"
 )
 
-const blinkInterval = 200 * time.Millisecond
+const blinkInterval = 500 * time.Millisecond
 
 func main() {
+	usbarmory.BLE.Init()
+	time.Sleep(time.Second)
+	usbarmory.BLE.UART.Write([]byte("AT" + "\r"))
+	time.Sleep(time.Second)
+	usbarmory.BLE.UART.Write([]byte("ATO1" + "\r"))
+
+	// set stdout over BLE serial
+
+	log.Default().SetOutput(usbarmory.BLE.UART)
+	// os.Stdout = w
+	// stdChan := make(chan string)
+	// go func() {
+	// 	for {
+	// 		var buf bytes.Buffer
+	// 		io.Copy(&buf, r)
+	// 		stdChan <- buf.String()
+	// 	}
+	// }()
+	// go func() {
+	// 	for {
+	// 		out := <-stdChan
+	// 		usbarmory.BLE.UART.Write([]byte(out + "\r"))
+	// 	}
+	// }()
+	// fmt.Println("DUUUUUUUUUUUUDE!")
 	port := usbarmory.USB1
 
 	device := &imxusb.Device{}
@@ -22,11 +48,14 @@ func main() {
 	port.Reset()
 
 	go port.Start(device)
+
 	for {
 		usbarmory.LED("white", true)
 		time.Sleep(blinkInterval)
 		usbarmory.LED("white", false)
 		time.Sleep(blinkInterval)
+		usbarmory.BLE.UART.Write([]byte("YOYO" + "\r"))
+		log.Println("YOYO from stdout")
 	}
 }
 
